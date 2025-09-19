@@ -12,7 +12,8 @@ export interface AppConfig {
 
 export const configuration = (): AppConfig => ({
   database: {
-    url: process.env.DATABASE_URL || 'mongodb://localhost:27017/landing-constructor',
+    url:
+      process.env.DATABASE_URL || 'mongodb://mongo:27017/landing-constructor',
   },
   server: {
     port: parseInt(process.env.PORT || '3000', 10),
