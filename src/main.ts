@@ -13,6 +13,13 @@ async function bootstrap() {
 
   app.use(morgan('dev'));
 
-  await app.listen(getServerConfig().port!);
+  // Дозволяємо CORS для доступу з інших пристроїв
+  app.enableCors();
+
+  const port = getServerConfig().port!;
+  await app.listen(port, '0.0.0.0');
+
+  console.log(`🚀 Server is running on:`);
+  console.log(`   Local:   http://localhost:${port}`);
 }
 bootstrap();
