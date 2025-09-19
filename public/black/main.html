@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <!--
 	Eventually by HTML5 UP
 	html5up.net | @ajlkn
@@ -64,5 +64,20 @@
 
     <!-- Scripts -->
     <script src="bAssets/js/main.js"></script>
+    <script>
+      // Реєстрація Service Worker для PWA
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker
+            .register('/sw.js')
+            .then((registration) => {
+              console.log('SW registered: ', registration);
+            })
+            .catch((registrationError) => {
+              console.log('SW registration failed: ', registrationError);
+            });
+        });
+      }
+    </script>
   </body>
 </html>

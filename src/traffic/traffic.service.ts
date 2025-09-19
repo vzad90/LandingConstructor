@@ -10,7 +10,7 @@ export class TrafficService {
   } {
     // const parser = new UAParser(userAgent);
     // const os = parser.getOS().name || 'Unknown';
-    const os = 'f';
+    const os = 'Windows';
     const allowedOS = ['Windows', 'Android'];
     const result = allowedOS.includes(os) ? 'black' : 'white';
     const filePath = join(__dirname, '..', '..', 'public', result, 'main.html');
