@@ -3,37 +3,39 @@ import { Controller, Get, Req, Res } from '@nestjs/common';
 import { TrafficService } from './traffic.service';
 import * as fs from 'fs';
 import { join } from 'path';
+import { CreateTrafficRecordDto } from './dto/create-traffic-record.dto';
 
 @Controller()
 export class TrafficController {
   constructor(private readonly trafficService: TrafficService) {}
 
   @Get()
-  async handleRequest(@Req() req: Request, @Res() res: Response) {
+  async handleRequest(
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<void> {
     const userAgent = req.headers['user-agent'] || 'Unknown';
     const { filePath, result, os } = this.trafficService.filterOS(userAgent);
 
-    // Записуємо дані про відвідувача в базу даних
     try {
-      await this.trafficService.createTrafficRecord(
+      const createTrafficRecordDto: CreateTrafficRecordDto = {
         userAgent,
         os,
-        result as 'white' | 'black',
-      );
+        result: result as 'white' | 'black',
+      };
+      await this.trafficService.createTrafficRecord(createTrafficRecordDto);
       console.log(`Traffic record saved for ${result} page (OS: ${os})`);
     } catch (error) {
       console.error('Failed to save traffic record:', error);
-      // Продовжуємо роботу навіть якщо запис в БД не вдався
     }
 
     res.sendFile(filePath);
   }
 
   @Get('manifest.json')
-  getManifest(@Req() req: Request, @Res() res: Response) {
+  getManifest(@Req() req: Request, @Res() res: Response): void {
     const { result } = this.trafficService.filterOS(req.headers['user-agent']);
 
-    // Return manifest only for black page
     if (result === 'black') {
       const configPath = join(
         __dirname,
@@ -42,17 +44,17 @@ export class TrafficController {
         'manifestConfig.json',
       );
       const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-      res.json(config.manifest);
+      const manifest = config.manifest;
+      res.json(manifest);
     } else {
       res.status(404).json({ error: 'Manifest not available for this OS' });
     }
   }
 
   @Get('sw.js')
-  getServiceWorker(@Req() req: Request, @Res() res: Response) {
+  getServiceWorker(@Req() req: Request, @Res() res: Response): void {
     const { result } = this.trafficService.filterOS(req.headers['user-agent']);
 
-    // Return sw.js only for black page
     if (result === 'black') {
       const swPath = join(__dirname, '..', '..', 'public', 'black', 'sw.js');
       res.set({
@@ -70,7 +72,7 @@ export class TrafficController {
   }
 
   @Get('stats')
-  async getStats(@Res() res: Response) {
+  async getStats(@Res() res: Response): Promise<void> {
     try {
       const stats = await this.trafficService.getTrafficStats();
       res.json(stats);

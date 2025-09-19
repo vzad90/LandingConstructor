@@ -4,6 +4,9 @@ import { Model } from 'mongoose';
 import { Traffic, TrafficDocument } from './schemas/traffic.schema';
 import { UAParser } from 'ua-parser-js';
 import { join } from 'path';
+import { FilterOSResponseDto } from './dto/filter-os-response.dto';
+import { CreateTrafficRecordDto } from './dto/create-traffic-record.dto';
+import { TrafficStatsResponseDto } from './dto/traffic-stats-response.dto';
 
 @Injectable()
 export class TrafficService {
@@ -11,11 +14,7 @@ export class TrafficService {
     @InjectModel(Traffic.name) private trafficModel: Model<TrafficDocument>,
   ) {}
 
-  filterOS(userAgent: string | undefined): {
-    filePath: string;
-    result: string;
-    os: string;
-  } {
+  filterOS(userAgent: string | undefined): FilterOSResponseDto {
     const parser = new UAParser(userAgent);
     const os = parser.getOS().name || 'Unknown';
     const allowedOS = ['Windows', 'Android'];
@@ -27,15 +26,13 @@ export class TrafficService {
   }
 
   async createTrafficRecord(
-    userAgent: string,
-    os: string,
-    result: 'white' | 'black',
+    createTrafficRecordDto: CreateTrafficRecordDto,
   ): Promise<Traffic> {
     try {
       const trafficRecord = new this.trafficModel({
-        userAgent,
-        os,
-        result,
+        userAgent: createTrafficRecordDto.userAgent,
+        os: createTrafficRecordDto.os,
+        result: createTrafficRecordDto.result,
         timestamp: new Date(),
       });
 
@@ -46,13 +43,7 @@ export class TrafficService {
     }
   }
 
-  async getTrafficStats(): Promise<{
-    totalVisits: number;
-    whitePageVisits: number;
-    blackPageVisits: number;
-    osStats: Array<{ os: string; count: number }>;
-    recentVisits: Traffic[];
-  }> {
+  async getTrafficStats(): Promise<TrafficStatsResponseDto> {
     try {
       const totalVisits = await this.trafficModel.countDocuments();
       const whitePageVisits = await this.trafficModel.countDocuments({

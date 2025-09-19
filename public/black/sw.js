@@ -1,4 +1,3 @@
-// Service Worker для PWA (тільки для black сторінки)
 const CACHE_NAME = 'landing-constructor-v1';
 const urlsToCache = [
   '/',
@@ -8,7 +7,6 @@ const urlsToCache = [
   '/bImages/icon-512x512.png',
 ];
 
-// Встановлення Service Worker
 self.addEventListener('install', (event) => {
   console.log('Service Worker installing...');
   event.waitUntil(
@@ -19,7 +17,6 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// Активація Service Worker
 self.addEventListener('activate', (event) => {
   console.log('Service Worker activating...');
   event.waitUntil(
@@ -36,11 +33,9 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Обробка запитів
 self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request).then((response) => {
-      // Повертаємо кешовану версію або завантажуємо з мережі
       return response || fetch(event.request);
     }),
   );

@@ -19,6 +19,5 @@ export const configuration = (): AppConfig => ({
   },
 });
 
-// Експорт окремих конфігурацій для зручності
 export const getDatabaseConfig = (): DatabaseConfig => configuration().database;
 export const getServerConfig = (): ServerConfig => configuration().server;

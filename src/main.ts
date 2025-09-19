@@ -12,8 +12,6 @@ async function bootstrap() {
   app.use(express.static(join(__dirname, '..', 'public/white')));
 
   app.use(morgan('dev'));
-
-  // Дозволяємо CORS для доступу з інших пристроїв
   app.enableCors();
 
   const port = getServerConfig().port!;
