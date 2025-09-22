@@ -46,7 +46,7 @@ BACKEND_URL=http://localhost
 
 ```bash
 # Clone repository
-git clone <repository-url>
+git clone https://github.com/vzad90/LandingConstructor.git
 cd LandingConstructor
 
 # Environment variables setup
@@ -64,7 +64,7 @@ npm run dev
 
 ```bash
 # Clone repository
-git clone <repository-url>
+git clone https://github.com/vzad90/LandingConstructor.git
 cd LandingConstructor
 
 # Environment variables setup
