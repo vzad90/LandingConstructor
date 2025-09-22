@@ -10,8 +10,7 @@ import { CloakingFilterService } from 'src/cloaking-filter/cloaking-filter.servi
     MongooseModule.forFeature([{ name: Traffic.name, schema: TrafficSchema }]),
   ],
   controllers: [TrafficController],
-  providers: [TrafficService, CloakingFilterService,
-  ],
+  providers: [TrafficService, CloakingFilterService],
   exports: [TrafficService],
 })
 export class TrafficModule {}

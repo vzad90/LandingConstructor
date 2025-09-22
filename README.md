@@ -44,6 +44,28 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
+## Code Quality
+
+This project uses ESLint and Husky for code quality and consistency:
+
+```bash
+# Run linting
+$ npm run lint
+
+# Format code
+$ npm run format
+```
+
+### Pre-commit hooks
+
+Husky is configured to run lint-staged before each commit, which will:
+
+- Run ESLint on staged TypeScript/JavaScript files
+- Format code with Prettier
+- Only check files that are being committed
+
+The configuration is in `.husky/pre-commit` and `package.json` (lint-staged section).
+
 ## Run tests
 
 ```bash

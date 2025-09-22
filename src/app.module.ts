@@ -13,9 +13,7 @@ import { CloakingFilterService } from './cloaking-filter/cloaking-filter.service
       isGlobal: true,
       load: [configuration],
     }),
-    MongooseModule.forRoot(
-      getDatabaseConfig().url,
-    ),
+    MongooseModule.forRoot(getDatabaseConfig().url),
     TrafficModule,
   ],
   controllers: [AppController],

@@ -14,7 +14,7 @@ async function bootstrap() {
   app.use(morgan('dev'));
   app.enableCors();
 
-  const port = getServerConfig().port!;
+  const port = getServerConfig().port;
   await app.listen(port, '0.0.0.0');
 
   console.log(`Server is running on:`);
