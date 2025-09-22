@@ -7,20 +7,23 @@ import { join } from 'path';
 import { FilterOSResponseDto } from './dto/filter-os-response.dto';
 import { CreateTrafficRecordDto } from './dto/create-traffic-record.dto';
 import { TrafficStatsResponseDto } from './dto/traffic-stats-response.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class TrafficService {
   constructor(
     @InjectModel(Traffic.name) private trafficModel: Model<TrafficDocument>,
+    private readonly configService: ConfigService,
   ) {}
 
   filterOS(userAgent: string | undefined): FilterOSResponseDto {
     const parser = new UAParser(userAgent);
     const os = parser.getOS().name || 'Unknown';
-    const allowedOS = ['Windows', 'Android'];
-    const result = allowedOS.includes(os) ? 'black' : 'white';
-    const filePath = join(__dirname, '..', '..', 'public', result, 'main.html');
-    console.log(`Detected OS: ${os}, serving ${result} page`);
+    const allowedOS = this.configService.get('filters.os');
+    const pageUrls = this.configService.get('pageUrls');
+
+    const result = allowedOS.includes(os) ? pageUrls.black : pageUrls.white;
+    const filePath = join(__dirname, '..', '..', result);
 
     return { filePath, result, os };
   }
@@ -47,10 +50,10 @@ export class TrafficService {
     try {
       const totalVisits = await this.trafficModel.countDocuments();
       const whitePageVisits = await this.trafficModel.countDocuments({
-        result: 'white',
+        result: this.configService.get('pageUrls').white,
       });
       const blackPageVisits = await this.trafficModel.countDocuments({
-        result: 'black',
+        result: this.configService.get('pageUrls').black,
       });
 
       const osStats = await this.trafficModel.aggregate([
