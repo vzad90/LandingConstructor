@@ -7,10 +7,13 @@ import {
   Req,
   Res,
 } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiHeader } from '@nestjs/swagger';
 import { TrafficService } from './traffic.service';
 import { CreateTrafficRecordDto } from './dto/create-traffic-record.dto';
+import { TrafficStatsResponseDto } from './dto/traffic-stats-response.dto';
 import { ConfigService } from '@nestjs/config';
 
+@ApiTags('traffic')
 @Controller()
 export class TrafficController {
   constructor(
@@ -19,6 +22,23 @@ export class TrafficController {
   ) {}
 
   @Get()
+  @ApiOperation({
+    summary: 'Handle request',
+    description:
+      'Filter traffic based on User-Agent and return the corresponding page (white or black)',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Return the corresponding page (white or black)',
+    content: {
+      'text/html': {
+        schema: {
+          type: 'string',
+          example: '<html>...</html>',
+        },
+      },
+    },
+  })
   async handleRequest(
     @Req() req: Request,
     @Res() res: Response,
@@ -46,6 +66,31 @@ export class TrafficController {
   }
 
   @Get('stats')
+  @ApiOperation({
+    summary: 'Get traffic statistics',
+    description:
+      'Get detailed statistics on visits, including distribution by OS and recent visits',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Traffic statistics successfully obtained',
+    type: TrafficStatsResponseDto,
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Server error when getting statistics',
+    schema: {
+      type: 'object',
+      properties: {
+        statusCode: { type: 'number', example: 500 },
+        message: {
+          type: 'string',
+          example: 'Failed to get traffic statistics',
+        },
+        error: { type: 'string', example: 'Internal Server Error' },
+      },
+    },
+  })
   async getStats() {
     try {
       const stats = await this.trafficService.getTrafficStats();
