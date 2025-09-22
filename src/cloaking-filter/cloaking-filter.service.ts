@@ -54,8 +54,8 @@ export class CloakingFilterService {
 
   public getFailureReason(filterResults: any): string {
     const failedFilters = Object.entries(filterResults)
-      .filter(([_, passed]) => !passed)
-      .map(([filter, _]) => filter.replace('Passed', ''));
+      .filter(([, passed]) => !passed)
+      .map(([filter]) => filter.replace('Passed', ''));
 
     return `Failed filters: ${failedFilters.join(', ')}`;
   }

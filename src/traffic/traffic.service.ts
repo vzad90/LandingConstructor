@@ -4,7 +4,6 @@ import { Model } from 'mongoose';
 import { Traffic, TrafficDocument } from './schemas/traffic.schema';
 import { UAParser } from 'ua-parser-js';
 import { join } from 'path';
-import { FilterOSResponseDto } from './dto/filter-os-response.dto';
 import { AdvancedFilterResponseDto } from './dto/advanced-filter-response.dto';
 import { CreateTrafficRecordDto } from './dto/create-traffic-record.dto';
 import { TrafficStatsResponseDto } from './dto/traffic-stats-response.dto';

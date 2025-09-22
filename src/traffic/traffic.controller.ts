@@ -7,7 +7,7 @@ import {
   Req,
   Res,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiHeader } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { TrafficService } from './traffic.service';
 import { CreateTrafficRecordDto } from './dto/create-traffic-record.dto';
 import { TrafficStatsResponseDto } from './dto/traffic-stats-response.dto';
