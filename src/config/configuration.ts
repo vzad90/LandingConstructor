@@ -8,6 +8,7 @@ export interface DatabaseConfig {
   url: string;
 }
 export interface ServerConfig {
+  url: string;
   port: number;
 }
 
@@ -51,6 +52,7 @@ export const configuration = (): AppConfig => ({
     url: process.env.DATABASE_URL || process.env.DATABASE_URL_LOCAL!,
   },
   server: {
+    url: process.env.BACKEND_URL || 'http://localhost',
     port: parseInt(process.env.PORT || '3000', 10),
   },
   filters: {

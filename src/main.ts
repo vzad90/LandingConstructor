@@ -24,11 +24,12 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
 
+  const backendUrl = getServerConfig().url;
   const port = getServerConfig().port;
   await app.listen(port, '0.0.0.0');
 
   console.log(`Server is running on:`);
   console.log(`Local:   http://localhost:${port}`);
-  console.log(`API Documentation: http://localhost:${port}/api/docs`);
+  console.log(`API Documentation: ${backendUrl}:${port}/api/docs`);
 }
 bootstrap();
