@@ -31,25 +31,19 @@ export class CloakingFilterService {
 
   public filterByUserAgent(
     userAgent: string | undefined,
-    userAgentFilters: { allowed: string[]; blocked: string[] },
+    blockedUserAgent: string[] | undefined,
   ): boolean {
-    if (!userAgent) return false;
+    if (!userAgent || !blockedUserAgent) return false;
 
     const ua = userAgent.toLowerCase();
 
-    for (const blocked of userAgentFilters.blocked) {
+    for (const blocked of blockedUserAgent) {
       if (ua.includes(blocked.toLowerCase())) {
         return false;
       }
     }
 
-    for (const allowed of userAgentFilters.allowed) {
-      if (ua.includes(allowed.toLowerCase())) {
-        return true;
-      }
-    }
-
-    return false;
+    return true;
   }
 
   public getFailureReason(filterResults: any): string {

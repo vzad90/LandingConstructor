@@ -17,10 +17,7 @@ export interface FiltersConfig {
   browsers: string[];
   devices: string[];
   blockedReferrers: string[];
-  userAgents: {
-    allowed: string[];
-    blocked: string[];
-  };
+  blockedUserAgents: string[];
 }
 
 export interface PagesConfig {
@@ -57,13 +54,17 @@ export const configuration = (): AppConfig => ({
   },
   filters: {
     os: ['Windows', 'Android'],
-    browsers: ['Chrome', 'Firefox', 'Safari'],
+    browsers: [
+      'Mobile Chrome',
+      'Chrome',
+      'Firefox',
+      'Safari',
+      'Mobile Safari',
+      'Edge',
+    ],
     devices: ['desktop', 'mobile'],
     blockedReferrers: ['bot.com', 'crawler.net'],
-    userAgents: {
-      allowed: ['Mozilla', 'Chrome', 'Safari'],
-      blocked: ['bot', 'crawler', 'spider', 'scraper'],
-    },
+    blockedUserAgents: ['bot', 'crawler', 'spider', 'scraper'],
   },
   pageUrls: {
     white: './public/white/main.html',

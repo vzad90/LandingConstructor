@@ -47,7 +47,7 @@ export class TrafficService {
       ),
       userAgentPassed: this.cloakingFilterService.filterByUserAgent(
         userAgent,
-        filters.userAgents,
+        filters.blockedUserAgents,
       ),
     };
 
@@ -57,7 +57,22 @@ export class TrafficService {
     const result = allFiltersPassed ? pageUrls.black : pageUrls.white;
     const filePath = join(__dirname, '..', '..', result);
 
-    console.log('Filter Results:', result);
+    console.log('Filter Results:', {
+      os: os,
+      browser: browser,
+      device: device,
+      referrer: referrer,
+      userAgent: userAgent,
+      osPassed: filterResults.osPassed,
+      browserPassed: filterResults.browserPassed,
+      devicePassed: filterResults.devicePassed,
+      referrerPassed: filterResults.referrerPassed,
+      userAgentPassed: filterResults.userAgentPassed,
+      allFiltersPassed: allFiltersPassed,
+      reason: allFiltersPassed
+        ? 'All filters passed'
+        : this.cloakingFilterService.getFailureReason(filterResults),
+    });
     return {
       filePath,
       result,

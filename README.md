@@ -86,15 +86,19 @@ npm run dev
 Settings are located in `src/config/configuration.ts`:
 
 ```typescript
-filters: {    // For getting access to black page
-    os: ['Windows', 'Android'],                           // Allowed os
-    browsers: ['Chrome', 'Firefox', 'Safari'],            // Allowed browsers
-    devices: ['desktop', 'mobile'],                       // Allowed devices
-    blockedReferrers: ['bot.com', 'crawler.net'],         // Blocked referrers
-    userAgents: {
-      allowed: ['Mozilla', 'Chrome', 'Safari'],           // Allowed userAgents
-      blocked: ['bot', 'crawler', 'spider', 'scraper'],   // Blocked userAgents
-    },
+filters: {                       // For getting access to black page
+    os: ['Windows', 'Android'],                                   // Allowed os
+    browsers: [                                                   // Allowed browsers
+      'Mobile Chrome',
+      'Chrome',
+      'Firefox',
+      'Safari',
+      'Mobile Safari',
+      'Edge',
+    ],
+    devices: ['desktop', 'mobile'],                               // Allowed devices
+    blockedReferrers: ['bot.com', 'crawler.net'],                 // Blocked referrers
+    blockedUserAgents: ['bot', 'crawler', 'spider', 'scraper'],   // Blocked userAgents
 }
 ```
 
