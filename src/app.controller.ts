@@ -15,7 +15,9 @@ export class AppController {
 
   @Get('manifest.json')
   getManifest(@Req() req: Request, @Res() res: Response): void {
-    const { result } = this.trafficService.filterOS(req.headers['user-agent']);
+    const { result } = this.trafficService.filter(req.headers['user-agent']);
+
+    console.log('Manifest Result:', result);
 
     if (result === this.configService.get('pageUrls').black) {
       const manifest = this.configService.get('pwa');
@@ -27,7 +29,7 @@ export class AppController {
 
   @Get('sw.js')
   getServiceWorker(@Req() req: Request, @Res() res: Response): void {
-    const { result } = this.trafficService.filterOS(req.headers['user-agent']);
+    const { result } = this.trafficService.filter(req.headers['user-agent']);
 
     if (result === this.configService.get('pageUrls').black) {
       const swPath = join(__dirname, '..', '..', 'public', 'black', 'sw.js');

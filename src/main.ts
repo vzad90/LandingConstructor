@@ -17,7 +17,7 @@ async function bootstrap() {
   const port = getServerConfig().port!;
   await app.listen(port, '0.0.0.0');
 
-  console.log(`🚀 Server is running on:`);
-  console.log(`   Local:   http://localhost:${port}`);
+  console.log(`Server is running on:`);
+  console.log(`Local:   http://localhost:${port}`);
 }
 bootstrap();

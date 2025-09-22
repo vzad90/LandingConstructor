@@ -13,6 +13,13 @@ export interface ServerConfig {
 
 export interface FiltersConfig {
   os: string[];
+  browsers: string[];
+  devices: string[];
+  blockedReferrers: string[];
+  userAgents: {
+    allowed: string[];
+    blocked: string[];
+  };
 }
 
 export interface PagesConfig {
@@ -48,6 +55,13 @@ export const configuration = (): AppConfig => ({
   },
   filters: {
     os: ['Windows', 'Android'],
+    browsers: ['Chrome', 'Firefox', 'Safari'],
+    devices: ['desktop', 'mobile'],
+    blockedReferrers: ['bot.com', 'crawler.net'],
+    userAgents: {
+      allowed: ['Mozilla', 'Chrome', 'Safari'],
+      blocked: ['bot', 'crawler', 'spider', 'scraper'],
+    },
   },
   pageUrls: {
     white: './public/white/main.html',

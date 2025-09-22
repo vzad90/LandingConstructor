@@ -5,6 +5,7 @@ import { AppService } from './app.service';
 import { TrafficModule } from './traffic/traffic.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { configuration, getDatabaseConfig } from './config/configuration';
+import { CloakingFilterService } from './cloaking-filter/cloaking-filter.service';
 
 @Module({
   imports: [
@@ -18,6 +19,6 @@ import { configuration, getDatabaseConfig } from './config/configuration';
     TrafficModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, CloakingFilterService],
 })
 export class AppModule {}

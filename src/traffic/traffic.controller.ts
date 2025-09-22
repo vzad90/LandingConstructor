@@ -8,7 +8,6 @@ import {
   Res,
 } from '@nestjs/common';
 import { TrafficService } from './traffic.service';
-import { join } from 'path';
 import { CreateTrafficRecordDto } from './dto/create-traffic-record.dto';
 import { ConfigService } from '@nestjs/config';
 
@@ -25,20 +24,25 @@ export class TrafficController {
     @Res() res: Response,
   ): Promise<void> {
     const userAgent = req.headers['user-agent'] || 'Unknown';
-    const { filePath, result, os } = this.trafficService.filterOS(userAgent);
+    const referrer = req.headers.referer || req.headers.referrer;
+
+    const filterResult = this.trafficService.filter(
+      userAgent,
+      referrer as string,
+    );
 
     try {
       const createTrafficRecordDto: CreateTrafficRecordDto = {
         userAgent,
-        os,
-        result,
+        os: filterResult.os,
+        result: filterResult.result,
       };
       await this.trafficService.createTrafficRecord(createTrafficRecordDto);
     } catch (error) {
       console.error('Failed to save traffic record:', error);
     }
 
-    res.sendFile(filePath);
+    res.sendFile(filterResult.filePath);
   }
 
   @Get('stats')

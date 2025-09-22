@@ -14,7 +14,7 @@ export class Traffic {
   timestamp: Date;
 
   @Prop({ required: true })
-  result: 'white' | 'black';
+  result: string;
 }
 
 export const TrafficSchema = SchemaFactory.createForClass(Traffic);
