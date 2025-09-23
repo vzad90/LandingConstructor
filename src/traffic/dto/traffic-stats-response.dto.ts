@@ -2,7 +2,16 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Traffic } from '../schemas/traffic.schema';
 
 export class OSStatsDto {
+  @ApiProperty({
+    description: 'Operating system',
+    example: 'Windows',
+  })
   os: string;
+
+  @ApiProperty({
+    description: 'Count of visits',
+    example: 1000,
+  })
   count: number;
 }
 
