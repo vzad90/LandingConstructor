@@ -4,6 +4,13 @@ Cloaking system and landing page constructor with traffic filtering by operating
 
 ## Project Description
 
+This is an MVP implementation (5 working days) that demonstrates the core logic of the system:
+
+- traffic cloaking,
+- OS/browser/device/.. filtering,
+- white/black landing pages with PWA support,
+- configuration-based constructor.
+
 The application implements a cloaking pattern to display different sites depending on traffic:
 
 - **White Page** - shown when filters don't match
@@ -76,9 +83,6 @@ docker-compose up -d
 
 # Check status
 docker-compose ps
-
-# Start application
-npm run dev
 ```
 
 ### Filter Configuration
@@ -101,6 +105,14 @@ filters: {                       // For getting access to black page
     blockedUserAgents: ['bot', 'crawler', 'spider', 'scraper'],   // Blocked userAgents
 }
 ```
+
+This configuration file also serves as a **constructor**:
+
+- All filters (OS, browsers, devices, referrers, user agents) are managed from here.
+- PWA settings (manifest.json, icons, theme) can also be configured here.  
+  This allows to build different landing behaviors without code changes.
+
+**Note**: All settings can be changed through the configuration file without recompilation.
 
 ## Commands
 
@@ -172,6 +184,26 @@ docker-compose logs      # View logs
 - Shown when filters are passed
 - Includes manifest.json and Service Worker
 
+#### Example manifest.json
+
+```json
+{
+  "name": "Landing Black Page",
+  "short_name": "Landing",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
+```
+
 ## Technologies
 
 - **Backend**: NestJS, TypeScript, MongoDB, Mongoose
@@ -196,5 +228,3 @@ The system collects statistics:
 - Referrer validation
 
 ---
-
-**Note**: All settings can be changed through the configuration file without recompilation.
