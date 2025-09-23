@@ -39,6 +39,8 @@ The application implements a cloaking pattern to display different sites dependi
 # Database
 # If you have your own database, specify in the variable:
 DATABASE_URL=your_connection_string
+
+# ONLY FOR DOCKER SETUP!!!
 # If you want to work in Docker (use MongoDB from docker-compose), leave the variable empty:
 DATABASE_URL=
 # In this case, connection will be automatically established to the database container via this URL.
