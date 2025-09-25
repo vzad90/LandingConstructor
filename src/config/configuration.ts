@@ -67,8 +67,8 @@ export const configuration = (): AppConfig => ({
     blockedUserAgents: ['bot', 'crawler', 'spider', 'scraper'],
   },
   pageUrls: {
-    white: './public/white/main.html',
-    black: './public/black/main.html',
+    white: 'public/white/main.html',
+    black: 'public/black/main.html',
   },
   pwa: {
     name: 'MyLanding',

@@ -21,7 +21,6 @@ export class TrafficController {
     private readonly configService: ConfigService,
   ) {}
 
-  @Get()
   @ApiOperation({
     summary: 'Handle request',
     description:
@@ -39,6 +38,7 @@ export class TrafficController {
       },
     },
   })
+  @Get()
   async handleRequest(
     @Req() req: Request,
     @Res() res: Response,

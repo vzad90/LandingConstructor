@@ -1,91 +1,28 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Traffic, TrafficDocument } from './schemas/traffic.schema';
-import { UAParser } from 'ua-parser-js';
-import { join } from 'path';
+import { Cache } from '@nestjs/cache-manager';
 import { AdvancedFilterResponseDto } from './dto/advanced-filter-response.dto';
 import { CreateTrafficRecordDto } from './dto/create-traffic-record.dto';
 import { TrafficStatsResponseDto } from './dto/traffic-stats-response.dto';
+import { Traffic, TrafficDocument } from './schemas/traffic.schema';
+import { FilterService } from './services/filter.service';
+import { Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
 import { ConfigService } from '@nestjs/config';
-import { CloakingFilterService } from 'src/cloaking-filter/cloaking-filter.service';
 
 @Injectable()
 export class TrafficService {
   constructor(
     @InjectModel(Traffic.name) private trafficModel: Model<TrafficDocument>,
     private readonly configService: ConfigService,
-    private readonly cloakingFilterService: CloakingFilterService,
+    private readonly filterService: FilterService,
+    private readonly cacheManager: Cache,
   ) {}
 
   filter(
     userAgent: string | undefined,
     referrer?: string,
   ): AdvancedFilterResponseDto {
-    const parser = new UAParser(userAgent);
-    const os = parser.getOS().name || 'Unknown';
-    const browser = parser.getBrowser().name || 'Unknown';
-    const device = parser.getDevice().type || 'desktop';
-    const timestamp = new Date();
-
-    const filters = this.configService.get('filters');
-    const pageUrls = this.configService.get('pageUrls');
-
-    const filterResults = {
-      osPassed: this.cloakingFilterService.filterByOS(os, filters.os),
-      browserPassed: this.cloakingFilterService.filterByBrowser(
-        browser,
-        filters.browsers,
-      ),
-      devicePassed: this.cloakingFilterService.filterByDevice(
-        device,
-        filters.devices,
-      ),
-      referrerPassed: this.cloakingFilterService.filterByReferrer(
-        referrer,
-        filters.blockedReferrers,
-      ),
-      userAgentPassed: this.cloakingFilterService.filterByUserAgent(
-        userAgent,
-        filters.blockedUserAgents,
-      ),
-    };
-
-    const allFiltersPassed = Object.values(filterResults).every(
-      (result) => result,
-    );
-    const result = allFiltersPassed ? pageUrls.black : pageUrls.white;
-    const filePath = join(__dirname, '..', '..', result);
-
-    console.log('Filter Results:', {
-      os: os,
-      browser: browser,
-      device: device,
-      referrer: referrer,
-      userAgent: userAgent,
-      osPassed: filterResults.osPassed,
-      browserPassed: filterResults.browserPassed,
-      devicePassed: filterResults.devicePassed,
-      referrerPassed: filterResults.referrerPassed,
-      userAgentPassed: filterResults.userAgentPassed,
-      allFiltersPassed: allFiltersPassed,
-      reason: allFiltersPassed
-        ? 'All filters passed'
-        : this.cloakingFilterService.getFailureReason(filterResults),
-    });
-    return {
-      filePath,
-      result,
-      os,
-      browser,
-      device,
-      userAgent: userAgent || 'Unknown',
-      timestamp,
-      filters: filterResults,
-      reason: allFiltersPassed
-        ? 'All filters passed'
-        : this.cloakingFilterService.getFailureReason(filterResults),
-    };
+    return this.filterService.filter(userAgent, referrer);
   }
 
   async createTrafficRecord(
@@ -99,7 +36,10 @@ export class TrafficService {
         timestamp: new Date(),
       });
 
-      return await trafficRecord.save();
+      const savedRecord = await trafficRecord.save();
+      await this.clearTrafficStatsCache();
+
+      return savedRecord;
     } catch (error) {
       console.error('Error saving traffic record:', error);
       throw error;
@@ -108,13 +48,49 @@ export class TrafficService {
 
   async getTrafficStats(): Promise<TrafficStatsResponseDto> {
     try {
-      const totalVisits = await this.trafficModel.countDocuments();
-      const whitePageVisits = await this.trafficModel.countDocuments({
-        result: this.configService.get('pageUrls').white,
-      });
-      const blackPageVisits = await this.trafficModel.countDocuments({
-        result: this.configService.get('pageUrls').black,
-      });
+      const cacheKey = 'traffic-stats';
+      const cachedStats =
+        await this.cacheManager.get<TrafficStatsResponseDto>(cacheKey);
+
+      if (cachedStats) return cachedStats;
+
+      const visitStats = await this.trafficModel.aggregate([
+        {
+          $group: {
+            _id: null,
+            totalVisits: { $sum: 1 },
+            whitePageVisits: {
+              $sum: {
+                $cond: [
+                  {
+                    $eq: ['$result', this.configService.get('pageUrls').white],
+                  },
+                  1,
+                  0,
+                ],
+              },
+            },
+            blackPageVisits: {
+              $sum: {
+                $cond: [
+                  {
+                    $eq: ['$result', this.configService.get('pageUrls').black],
+                  },
+                  1,
+                  0,
+                ],
+              },
+            },
+          },
+        },
+      ]);
+
+      const { totalVisits, whitePageVisits, blackPageVisits } =
+        visitStats[0] || {
+          totalVisits: 0,
+          whitePageVisits: 0,
+          blackPageVisits: 0,
+        };
 
       const osStats = await this.trafficModel.aggregate([
         { $group: { _id: '$os', count: { $sum: 1 } } },
@@ -128,16 +104,27 @@ export class TrafficService {
         .limit(10)
         .exec();
 
-      return {
+      const stats: TrafficStatsResponseDto = {
         totalVisits,
         whitePageVisits,
         blackPageVisits,
         osStats,
         recentVisits,
       };
+      await this.cacheManager.set(cacheKey, stats, 120000);
+
+      return stats;
     } catch (error) {
       console.error('Error getting traffic stats:', error);
       throw error;
+    }
+  }
+
+  private async clearTrafficStatsCache(): Promise<void> {
+    try {
+      await this.cacheManager.del('traffic-stats');
+    } catch (error) {
+      console.error('Error clearing traffic stats cache:', error);
     }
   }
 }

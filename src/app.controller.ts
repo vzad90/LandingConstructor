@@ -50,8 +50,6 @@ export class AppController {
   getManifest(@Req() req: Request, @Res() res: Response): void {
     const { result } = this.trafficService.filter(req.headers['user-agent']);
 
-    console.log('Manifest Result:', result);
-
     if (result === this.configService.get('pageUrls').black) {
       const manifest = this.configService.get('pwa');
       res.json(manifest);
